@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Sign Up | John Gaming Shop</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <style>
+    body {
+      font-family: 'Myanmar Text', sans-serif;
+      background: #0d47a1;
+      color: white;
+      text-align: center;
+      padding: 40px 20px;
+    }
+
+    input {
+      padding: 12px;
+      margin: 10px;
+      width: 80%;
+      max-width: 300px;
+      border-radius: 8px;
+      border: none;
+      font-size: 16px;
+    }
+
+    button {
+      background: linear-gradient(90deg, #00ffe7, #0077ff);
+      border: none;
+      border-radius: 8px;
+      padding: 12px 20px;
+      font-weight: bold;
+      color: black;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 10px;
+      width: 80%;
+      max-width: 300px;
+    }
+
+    .link {
+      margin-top: 20px;
+      font-size: 14px;
+    }
+
+    .link a {
+      color: #00ffe7;
+      text-decoration: underline;
+    }
+
+    .error {
+      color: #ff5252;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>📝 Sign Up</h2>
+  <input type="text" id="name" placeholder="နာမည်">
+  <input type="text" id="phone" placeholder="ဖုန်းနံပါတ်">
+  <input type="email" id="email" placeholder="Email">
+  <input type="password" id="password" placeholder="New Password">
+  <input type="password" id="confirm" placeholder="Confirm Password">
+  <br>
+  <button onclick="signup()">Create Account</button>
+  <div class="link">အကောင့်ရှိပြီသားလား? <a href="login.html">Login</a></div>
+  <div class="error" id="errorMsg"></div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      databaseURL: "https://YOUR_PROJECT_ID.firebaseio.com",
+      projectId: "YOUR_PROJECT_ID"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.database();
+
+    function signup() {
+      const name = document.getElementById("name").value;
+      const phone = document.getElementById("phone").value;
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      const confirm = document.getElementById("confirm").value;
+
+      if (password !== confirm) {
+        document.getElementById("errorMsg").innerText = "🔐 Password မတူပါ!";
+        return;
+      }
+
+      auth.createUserWithEmailAndPassword(email, password)
+        .then(userCredential => {
+          const uid = userCredential.user.uid;
+          db.ref("users/" + uid).set({
+            name: name,
+            phone: phone,
+            email: email,
+            balance: 0,
+            plan: "free"
+          });
+          window.location.href = "home.html";
+        })
+        .catch(error => {
+          document.getElementById("errorMsg").innerText = error.message;
+        });
+    }
+  </script>
+
+</body>
+</html>
